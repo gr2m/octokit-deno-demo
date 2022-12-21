@@ -1,0 +1,19 @@
+{
+  "name": "octokit-deno-demo",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Demo of using Octokit with Deno",
+  "repository": "github:gr2m/octokit-deno-demo",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit-next/request": "^2.6.1",
+    "universal-github-app-jwt": "^2.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.16.10"
+  },
+  "scripts": {
+    "build": "esbuild index.js --bundle --outfile=deno-bundle.js --target=es2020 --format=esm"
+  }
+}
