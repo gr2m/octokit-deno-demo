@@ -5,7 +5,7 @@ import { request, githubAppJwt } from "./deno-bundle.js";
 const env = config();
 
 const { token } = await githubAppJwt({
-  appId: env.GITHUB_APP_ID,
+  id: env.GITHUB_APP_ID,
   privateKey: env.GITHUB_APP_PRIVATE_KEY,
 });
 

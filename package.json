@@ -11,6 +11,7 @@
     "universal-github-app-jwt": "^2.0.0"
   },
   "devDependencies": {
+    "dotenv": "^16.0.3",
     "esbuild": "^0.16.10"
   },
   "scripts": {
