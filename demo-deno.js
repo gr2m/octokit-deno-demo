@@ -1,6 +1,10 @@
 // app.ts
 import { config } from "https://deno.land/x/dotenv/mod.ts";
-import { request, githubAppJwt } from "./deno-bundle.js";
+import {
+  request,
+  githubAppJwt,
+  getWebFlowAuthorizationUrl,
+} from "./deno-bundle.js";
 
 const env = config();
 
@@ -15,4 +19,12 @@ const { data } = await request("GET /app", {
   },
 });
 
-console.log(data);
+console.log("Authenticated as %s", data.slug);
+
+const { url } = getWebFlowAuthorizationUrl({
+  clientType: "github-app",
+  clientId: "1234567890abcdef1234",
+  scopes: ["repo"],
+});
+
+console.log("Open %s", url);

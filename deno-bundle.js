@@ -1,13 +1,5 @@
 var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) =>
-  key in obj
-    ? __defProp(obj, key, {
-        enumerable: true,
-        configurable: true,
-        writable: true,
-        value,
-      })
-    : (obj[key] = value);
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
@@ -30,13 +22,7 @@ function isPlainObject(value) {
     return false;
   }
   const prototype = Object.getPrototypeOf(value);
-  return (
-    (prototype === null ||
-      prototype === Object.prototype ||
-      Object.getPrototypeOf(prototype) === null) &&
-    !(Symbol.toStringTag in value) &&
-    !(Symbol.iterator in value)
-  );
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
 }
 
 // node_modules/@octokit-next/endpoint/lib/util/merge-deep.js
@@ -44,8 +30,10 @@ function mergeDeep(defaults, options) {
   const result = Object.assign({}, defaults);
   Object.keys(options).forEach((key) => {
     if (isPlainObject(options[key])) {
-      if (!(key in defaults)) Object.assign(result, { [key]: options[key] });
-      else result[key] = mergeDeep(defaults[key], options[key]);
+      if (!(key in defaults))
+        Object.assign(result, { [key]: options[key] });
+      else
+        result[key] = mergeDeep(defaults[key], options[key]);
     } else {
       Object.assign(result, { [key]: options[key] });
     }
@@ -76,9 +64,7 @@ function merge(defaults, route, options) {
   removeUndefinedProperties(options.headers);
   const mergedOptions = mergeDeep(defaults || {}, options);
   if (defaults && defaults.mediaType.previews.length) {
-    mergedOptions.mediaType.previews = defaults.mediaType.previews
-      .filter((preview) => !mergedOptions.mediaType.previews.includes(preview))
-      .concat(mergedOptions.mediaType.previews);
+    mergedOptions.mediaType.previews = defaults.mediaType.previews.filter((preview) => !mergedOptions.mediaType.previews.includes(preview)).concat(mergedOptions.mediaType.previews);
   }
   mergedOptions.mediaType.previews = mergedOptions.mediaType.previews.map(
     (preview) => preview.replace(/-preview/, "")
@@ -93,14 +79,12 @@ function addQueryParameters(url, parameters) {
   if (names.length === 0) {
     return url;
   }
-  const query = names
-    .map((name) => {
-      if (name === "q") {
-        return "q=" + parameters.q.split("+").map(encodeURIComponent).join("+");
-      }
-      return `${name}=${encodeURIComponent(parameters[name])}`;
-    })
-    .join("&");
+  const query = names.map((name) => {
+    if (name === "q") {
+      return "q=" + parameters.q.split("+").map(encodeURIComponent).join("+");
+    }
+    return `${name}=${encodeURIComponent(parameters[name])}`;
+  }).join("&");
   return url + separator + query;
 }
 
@@ -119,36 +103,28 @@ function extractUrlVariableNames(url) {
 
 // node_modules/@octokit-next/endpoint/lib/util/omit.js
 function omit(object, keysToOmit) {
-  return Object.keys(object)
-    .filter((option) => !keysToOmit.includes(option))
-    .reduce((obj, key) => {
-      obj[key] = object[key];
-      return obj;
-    }, {});
+  return Object.keys(object).filter((option) => !keysToOmit.includes(option)).reduce((obj, key) => {
+    obj[key] = object[key];
+    return obj;
+  }, {});
 }
 
 // node_modules/@octokit-next/endpoint/lib/util/url-template.js
 function encodeReserved(str) {
-  return str
-    .split(/(%[0-9A-Fa-f]{2})/g)
-    .map(function (part) {
-      if (!/%[0-9A-Fa-f]/.test(part)) {
-        part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
-      }
-      return part;
-    })
-    .join("");
+  return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+    if (!/%[0-9A-Fa-f]/.test(part)) {
+      part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
+    }
+    return part;
+  }).join("");
 }
 function encodeUnreserved(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
     return "%" + c.charCodeAt(0).toString(16).toUpperCase();
   });
 }
 function encodeValue(operator, value, key) {
-  value =
-    operator === "+" || operator === "#"
-      ? encodeReserved(value)
-      : encodeUnreserved(value);
+  value = operator === "+" || operator === "#" ? encodeReserved(value) : encodeUnreserved(value);
   if (key) {
     return encodeUnreserved(key) + "=" + value;
   } else {
@@ -162,14 +138,9 @@ function isKeyOperator(operator) {
   return operator === ";" || operator === "&" || operator === "?";
 }
 function getValues(context, operator, key, modifier) {
-  var value = context[key],
-    result = [];
+  var value = context[key], result = [];
   if (isDefined(value) && value !== "") {
-    if (
-      typeof value === "string" ||
-      typeof value === "number" ||
-      typeof value === "boolean"
-    ) {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
       value = value.toString();
       if (modifier && modifier !== "*") {
         value = value.substring(0, parseInt(modifier, 10));
@@ -180,13 +151,13 @@ function getValues(context, operator, key, modifier) {
     } else {
       if (modifier === "*") {
         if (Array.isArray(value)) {
-          value.filter(isDefined).forEach(function (value2) {
+          value.filter(isDefined).forEach(function(value2) {
             result.push(
               encodeValue(operator, value2, isKeyOperator(operator) ? key : "")
             );
           });
         } else {
-          Object.keys(value).forEach(function (k) {
+          Object.keys(value).forEach(function(k) {
             if (isDefined(value[k])) {
               result.push(encodeValue(operator, value[k], k));
             }
@@ -195,11 +166,11 @@ function getValues(context, operator, key, modifier) {
       } else {
         const tmp = [];
         if (Array.isArray(value)) {
-          value.filter(isDefined).forEach(function (value2) {
+          value.filter(isDefined).forEach(function(value2) {
             tmp.push(encodeValue(operator, value2));
           });
         } else {
-          Object.keys(value).forEach(function (k) {
+          Object.keys(value).forEach(function(k) {
             if (isDefined(value[k])) {
               tmp.push(encodeUnreserved(k));
               tmp.push(encodeValue(operator, value[k].toString()));
@@ -228,14 +199,14 @@ function getValues(context, operator, key, modifier) {
 }
 function parseUrl(template) {
   return {
-    expand: expand.bind(null, template),
+    expand: expand.bind(null, template)
   };
 }
 function expand(template, context) {
   var operators = ["+", "#", ".", "/", ";", "?", "&"];
   return template.replace(
     /\{([^\{\}]+)\}|([^\{\}]+)/g,
-    function (_, expression, literal) {
+    function(_, expression, literal) {
       if (expression) {
         let operator = "";
         const values = [];
@@ -243,7 +214,7 @@ function expand(template, context) {
           operator = expression.charAt(0);
           expression = expression.substr(1);
         }
-        expression.split(/,/g).forEach(function (variable) {
+        expression.split(/,/g).forEach(function(variable) {
           var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
           values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
         });
@@ -277,42 +248,31 @@ function parse(options) {
     "url",
     "headers",
     "request",
-    "mediaType",
+    "mediaType"
   ]);
   const urlVariableNames = extractUrlVariableNames(url);
   url = parseUrl(url).expand(parameters);
   if (!/^http/.test(url)) {
     url = options.baseUrl + url;
   }
-  const omittedParameters = Object.keys(options)
-    .filter((option) => urlVariableNames.includes(option))
-    .concat("baseUrl");
+  const omittedParameters = Object.keys(options).filter((option) => urlVariableNames.includes(option)).concat("baseUrl");
   const remainingParameters = omit(parameters, omittedParameters);
   const isBinaryRequest = /application\/octet-stream/i.test(headers.accept);
   if (!isBinaryRequest) {
     if (options.mediaType.format) {
-      headers.accept = headers.accept
-        .split(/,/)
-        .map((preview) =>
-          preview.replace(
-            /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
-            `application/vnd$1$2.${options.mediaType.format}`
-          )
+      headers.accept = headers.accept.split(/,/).map(
+        (preview) => preview.replace(
+          /application\/vnd(\.\w+)(\.v3)?(\.\w+)?(\+json)?$/,
+          `application/vnd$1$2.${options.mediaType.format}`
         )
-        .join(",");
+      ).join(",");
     }
     if (options.mediaType.previews.length) {
-      const previewsFromAcceptHeader =
-        headers.accept.match(/[\w-]+(?=-preview)/g) || [];
-      headers.accept = previewsFromAcceptHeader
-        .concat(options.mediaType.previews)
-        .map((preview) => {
-          const format = options.mediaType.format
-            ? `.${options.mediaType.format}`
-            : "+json";
-          return `application/vnd.github.${preview}-preview${format}`;
-        })
-        .join(",");
+      const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
+      headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
+        const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
+        return `application/vnd.github.${preview}-preview${format}`;
+      }).join(",");
     }
   }
   if (["GET", "HEAD"].includes(method)) {
@@ -352,7 +312,7 @@ function withDefaults(oldDefaults, newDefaults) {
     DEFAULTS: DEFAULTS2,
     defaults: withDefaults.bind(null, DEFAULTS2),
     merge: merge.bind(null, DEFAULTS2),
-    parse,
+    parse
   });
 }
 
@@ -362,15 +322,13 @@ function getUserAgent() {
     return navigator.userAgent;
   }
   if (typeof process === "object" && "version" in process) {
-    return `Node.js/${process.version.substr(1)} (${process.platform}; ${
-      process.arch
-    })`;
+    return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
   }
   return "<environment undetectable>";
 }
 
 // node_modules/@octokit-next/endpoint/lib/version.js
-var VERSION = "2.6.1";
+var VERSION = "2.7.0";
 
 // node_modules/@octokit-next/endpoint/lib/defaults.js
 var userAgent = `octokit-next-endpoint.js/${VERSION} ${getUserAgent()}`;
@@ -379,19 +337,19 @@ var DEFAULTS = {
   baseUrl: "https://api.github.com",
   headers: {
     accept: "application/vnd.github.v3+json",
-    "user-agent": userAgent,
+    "user-agent": userAgent
   },
   mediaType: {
     format: "",
-    previews: [],
-  },
+    previews: []
+  }
 };
 
 // node_modules/@octokit-next/endpoint/index.js
 var endpoint = withDefaults(null, DEFAULTS);
 
 // node_modules/@octokit-next/request/lib/version.js
-var VERSION2 = "2.6.1";
+var VERSION2 = "2.7.0";
 
 // node_modules/is-plain-object/dist/is-plain-object.mjs
 function isObject(o) {
@@ -399,11 +357,14 @@ function isObject(o) {
 }
 function isPlainObject2(o) {
   var ctor, prot;
-  if (isObject(o) === false) return false;
+  if (isObject(o) === false)
+    return false;
   ctor = o.constructor;
-  if (ctor === void 0) return true;
+  if (ctor === void 0)
+    return true;
   prot = ctor.prototype;
-  if (isObject(prot) === false) return false;
+  if (isObject(prot) === false)
+    return false;
   if (prot.hasOwnProperty("isPrototypeOf") === false) {
     return false;
   }
@@ -433,12 +394,10 @@ var RequestError = class extends Error {
         authorization: options.request.headers.authorization.replace(
           / .*$/,
           " [REDACTED]"
-        ),
+        )
       };
     }
-    requestCopy.url = requestCopy.url
-      .replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]")
-      .replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
     this.request = requestCopy;
   }
 };
@@ -451,103 +410,92 @@ function getBufferResponse(response) {
 // node_modules/@octokit-next/request/lib/fetch-wrapper.js
 function fetchWrapper(requestOptions) {
   const log = requestOptions.request?.log || console;
-  if (
-    isPlainObject2(requestOptions.body) ||
-    Array.isArray(requestOptions.body)
-  ) {
+  if (isPlainObject2(requestOptions.body) || Array.isArray(requestOptions.body)) {
     requestOptions.body = JSON.stringify(requestOptions.body);
   }
   let responseHeaders = {};
   let status;
   let url;
-  const { redirect, fetch, ...remainingRequestOptions } =
-    requestOptions.request || {};
+  const { redirect, fetch, ...remainingRequestOptions } = requestOptions.request || {};
   const fetchOptions = {
     method: requestOptions.method,
     body: requestOptions.body,
     headers: requestOptions.headers,
     redirect,
-    ...remainingRequestOptions,
+    ...remainingRequestOptions
   };
   const requestOrGlobalFetch = fetch || globalThis.fetch;
-  return requestOrGlobalFetch(requestOptions.url, fetchOptions)
-    .then(async (response) => {
-      url = response.url;
-      status = response.status;
-      for (const keyAndValue of response.headers) {
-        responseHeaders[keyAndValue[0]] = keyAndValue[1];
-      }
-      if ("deprecation" in responseHeaders) {
-        const matches =
-          responseHeaders.link &&
-          responseHeaders.link.match(/<([^>]+)>; rel="deprecation"/);
-        const deprecationLink = matches && matches.pop();
-        log.warn(
-          `[@octokit/request] "${requestOptions.method} ${
-            requestOptions.url
-          }" is deprecated. It is scheduled to be removed on ${
-            responseHeaders.sunset
-          }${deprecationLink ? `. See ${deprecationLink}` : ""}`
-        );
-      }
-      if (status === 204 || status === 205) {
+  return requestOrGlobalFetch(requestOptions.url, fetchOptions).then(async (response) => {
+    url = response.url;
+    status = response.status;
+    for (const keyAndValue of response.headers) {
+      responseHeaders[keyAndValue[0]] = keyAndValue[1];
+    }
+    if ("deprecation" in responseHeaders) {
+      const matches = responseHeaders.link && responseHeaders.link.match(/<([^>]+)>; rel="deprecation"/);
+      const deprecationLink = matches && matches.pop();
+      log.warn(
+        `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${responseHeaders.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
+      );
+    }
+    if (status === 204 || status === 205) {
+      return;
+    }
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
         return;
       }
-      if (requestOptions.method === "HEAD") {
-        if (status < 400) {
-          return;
-        }
-        throw new RequestError(response.statusText, status, {
-          response: {
-            url,
-            status,
-            headers: responseHeaders,
-            data: void 0,
-          },
-          request: requestOptions,
-        });
-      }
-      if (status === 304) {
-        throw new RequestError("Not modified", status, {
-          response: {
-            url,
-            status,
-            headers: responseHeaders,
-            data: await getResponseData(response),
-          },
-          request: requestOptions,
-        });
-      }
-      if (status >= 400) {
-        const data = await getResponseData(response);
-        const error = new RequestError(toErrorMessage(data), status, {
-          response: {
-            url,
-            status,
-            headers: responseHeaders,
-            data,
-          },
-          request: requestOptions,
-        });
-        throw error;
-      }
-      return getResponseData(response);
-    })
-    .then((data) => {
-      return {
-        status,
-        url,
-        headers: responseHeaders,
-        data,
-      };
-    })
-    .catch((error) => {
-      if (error instanceof RequestError) throw error;
-      if (error.name === "AbortError") throw error;
-      throw new RequestError(error.message, 500, {
-        request: requestOptions,
+      throw new RequestError(response.statusText, status, {
+        response: {
+          url,
+          status,
+          headers: responseHeaders,
+          data: void 0
+        },
+        request: requestOptions
       });
+    }
+    if (status === 304) {
+      throw new RequestError("Not modified", status, {
+        response: {
+          url,
+          status,
+          headers: responseHeaders,
+          data: await getResponseData(response)
+        },
+        request: requestOptions
+      });
+    }
+    if (status >= 400) {
+      const data = await getResponseData(response);
+      const error = new RequestError(toErrorMessage(data), status, {
+        response: {
+          url,
+          status,
+          headers: responseHeaders,
+          data
+        },
+        request: requestOptions
+      });
+      throw error;
+    }
+    return getResponseData(response);
+  }).then((data) => {
+    return {
+      status,
+      url,
+      headers: responseHeaders,
+      data
+    };
+  }).catch((error) => {
+    if (error instanceof RequestError)
+      throw error;
+    if (error.name === "AbortError")
+      throw error;
+    throw new RequestError(error.message, 500, {
+      request: requestOptions
     });
+  });
 }
 async function getResponseData(response) {
   const contentType = response.headers.get("content-type");
@@ -560,7 +508,8 @@ async function getResponseData(response) {
   return getBufferResponse(response);
 }
 function toErrorMessage(data) {
-  if (typeof data === "string") return data;
+  if (typeof data === "string")
+    return data;
   if ("message" in data) {
     if (Array.isArray(data.errors)) {
       return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
@@ -573,34 +522,365 @@ function toErrorMessage(data) {
 // node_modules/@octokit-next/request/lib/with-defaults.js
 function withDefaults2(oldEndpoint, newDefaults) {
   const endpoint2 = oldEndpoint.defaults(newDefaults);
-  const newApi = function (route, parameters) {
+  const newApi = function(route, parameters) {
     const endpointOptions = endpoint2.merge(route, parameters);
     if (!endpointOptions.request || !endpointOptions.request.hook) {
       return fetchWrapper(endpoint2.parse(endpointOptions));
     }
     const request2 = (route2, parameters2) => {
-      return fetchWrapper(
-        endpoint2.parse(endpoint2.merge(route2, parameters2))
-      );
+      return fetchWrapper(endpoint2.parse(endpoint2.merge(route2, parameters2)));
     };
     Object.assign(request2, {
       endpoint: endpoint2,
-      defaults: withDefaults2.bind(null, endpoint2),
+      defaults: withDefaults2.bind(null, endpoint2)
     });
     return endpointOptions.request.hook(request2, endpointOptions);
   };
   return Object.assign(newApi, {
     endpoint: endpoint2,
-    defaults: withDefaults2.bind(null, endpoint2),
+    defaults: withDefaults2.bind(null, endpoint2)
   });
 }
 
 // node_modules/@octokit-next/request/index.js
 var request = withDefaults2(endpoint, {
   headers: {
-    "user-agent": `octokit-next-request.js/${VERSION2} ${getUserAgent()}`,
-  },
+    "user-agent": `octokit-next-request.js/${VERSION2} ${getUserAgent()}`
+  }
 });
+
+// node_modules/@octokit-next/oauth-authorization-url/lib/version.js
+var VERSION3 = "2.7.0";
+
+// node_modules/@octokit-next/oauth-authorization-url/index.js
+oauthAuthorizationUrl.VERSION = VERSION3;
+function oauthAuthorizationUrl(options) {
+  const clientType = options.clientType || "oauth-app";
+  const baseUrl = options.baseUrl || "https://github.com";
+  const result = {
+    clientType,
+    allowSignup: options.allowSignup === false ? false : true,
+    clientId: options.clientId,
+    login: options.login || null,
+    redirectUrl: options.redirectUrl || null,
+    state: options.state || Math.random().toString(36).substr(2),
+    url: ""
+  };
+  if (clientType === "oauth-app") {
+    const scopes = "scopes" in options ? options.scopes : [];
+    result.scopes = typeof scopes === "string" ? scopes.split(/[,\s]+/).filter(Boolean) : scopes;
+  }
+  result.url = urlBuilderAuthorize(`${baseUrl}/login/oauth/authorize`, result);
+  return result;
+}
+function urlBuilderAuthorize(base, options) {
+  const map = {
+    allowSignup: "allow_signup",
+    clientId: "client_id",
+    login: "login",
+    redirectUrl: "redirect_uri",
+    scopes: "scope",
+    state: "state"
+  };
+  let url = base;
+  Object.keys(map).filter((k) => options[k] !== null).filter((k) => {
+    if (k !== "scopes")
+      return true;
+    if (options.clientType === "github-app")
+      return false;
+    return !Array.isArray(options[k]) || options[k].length > 0;
+  }).map((key) => [map[key], `${options[key]}`]).forEach(([key, value], index) => {
+    url += index === 0 ? `?` : "&";
+    url += `${key}=${encodeURIComponent(value)}`;
+  });
+  return url;
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/utils.js
+function requestToOAuthBaseUrl(request2) {
+  const endpointDefaults = request2.endpoint.DEFAULTS;
+  return /^https:\/\/(api\.)?github\.com$/.test(endpointDefaults.baseUrl) ? "https://github.com" : endpointDefaults.baseUrl.replace("/api/v3", "");
+}
+async function oauthRequest(request2, route, parameters) {
+  const withOAuthParameters = {
+    baseUrl: requestToOAuthBaseUrl(request2),
+    headers: {
+      accept: "application/json"
+    },
+    ...parameters
+  };
+  const response = await request2(route, withOAuthParameters);
+  const { error, error_description, error_uri } = response.data;
+  if (error) {
+    const requestError = new RequestError(
+      `${error_description} (${error}, ${error_uri})`,
+      400,
+      {
+        request: request2.endpoint.merge(route, withOAuthParameters),
+        response
+      }
+    );
+    throw requestError;
+  }
+  return response;
+}
+function toTimestamp(apiTimeInMs, expirationInSeconds) {
+  return new Date(apiTimeInMs + expirationInSeconds * 1e3).toISOString();
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/get-web-flow-authorization-url.js
+function getWebFlowAuthorizationUrl({
+  request: request2 = request,
+  ...options
+}) {
+  const baseUrl = requestToOAuthBaseUrl(request2);
+  return oauthAuthorizationUrl({ ...options, baseUrl });
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/exchange-web-flow-code.js
+async function exchangeWebFlowCode(options) {
+  const request2 = options.request || request;
+  const response = await oauthRequest(
+    request2,
+    "POST /login/oauth/access_token",
+    {
+      client_id: options.clientId,
+      client_secret: options.clientSecret,
+      code: options.code,
+      redirect_uri: options.redirectUrl
+    }
+  );
+  const authentication = {
+    clientType: options.clientType,
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    token: response.data.access_token,
+    scopes: response.data.scope.split(/\s+/).filter(Boolean)
+  };
+  if (options.clientType === "github-app") {
+    if ("refresh_token" in response.data) {
+      const apiTimeInMs = new Date(response.headers.date).getTime();
+      authentication.refreshToken = response.data.refresh_token;
+      authentication.expiresAt = toTimestamp(
+        apiTimeInMs,
+        response.data.expires_in
+      );
+      authentication.refreshTokenExpiresAt = toTimestamp(
+        apiTimeInMs,
+        response.data.refresh_token_expires_in
+      );
+    }
+    delete authentication.scopes;
+  }
+  return { ...response, authentication };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/create-device-code.js
+async function createDeviceCode(options) {
+  const request2 = options.request || request;
+  const parameters = {
+    client_id: options.clientId
+  };
+  if ("scopes" in options && Array.isArray(options.scopes)) {
+    parameters.scope = options.scopes.join(" ");
+  }
+  return oauthRequest(request2, "POST /login/device/code", parameters);
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/exchange-device-code.js
+async function exchangeDeviceCode(options) {
+  const request2 = options.request || request;
+  const response = await oauthRequest(
+    request2,
+    "POST /login/oauth/access_token",
+    {
+      client_id: options.clientId,
+      device_code: options.code,
+      grant_type: "urn:ietf:params:oauth:grant-type:device_code"
+    }
+  );
+  const authentication = {
+    clientType: options.clientType,
+    clientId: options.clientId,
+    token: response.data.access_token,
+    scopes: response.data.scope.split(/\s+/).filter(Boolean)
+  };
+  if ("clientSecret" in options) {
+    authentication.clientSecret = options.clientSecret;
+  }
+  if (options.clientType === "github-app") {
+    if ("refresh_token" in response.data) {
+      const apiTimeInMs = new Date(response.headers.date).getTime();
+      authentication.refreshToken = response.data.refresh_token, authentication.expiresAt = toTimestamp(
+        apiTimeInMs,
+        response.data.expires_in
+      ), authentication.refreshTokenExpiresAt = toTimestamp(
+        apiTimeInMs,
+        response.data.refresh_token_expires_in
+      );
+    }
+    delete authentication.scopes;
+  }
+  return { ...response, authentication };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/check-token.js
+async function checkToken(options) {
+  const request2 = options.request || request;
+  const response = await request2("POST /applications/{client_id}/token", {
+    headers: {
+      authorization: `basic ${btoa(
+        `${options.clientId}:${options.clientSecret}`
+      )}`
+    },
+    client_id: options.clientId,
+    access_token: options.token
+  });
+  const authentication = {
+    clientType: options.clientType,
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    token: options.token,
+    scopes: response.data.scopes
+  };
+  if (response.data.expires_at)
+    authentication.expiresAt = response.data.expires_at;
+  if (options.clientType === "github-app") {
+    delete authentication.scopes;
+  }
+  return {
+    ...response,
+    authentication
+  };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/refresh-token.js
+async function refreshToken(options) {
+  const request2 = options.request || request;
+  const response = await oauthRequest(
+    request2,
+    "POST /login/oauth/access_token",
+    {
+      client_id: options.clientId,
+      client_secret: options.clientSecret,
+      grant_type: "refresh_token",
+      refresh_token: options.refreshToken
+    }
+  );
+  const apiTimeInMs = new Date(response.headers.date).getTime();
+  const authentication = {
+    clientType: "github-app",
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    token: response.data.access_token,
+    refreshToken: response.data.refresh_token,
+    expiresAt: toTimestamp(apiTimeInMs, response.data.expires_in),
+    refreshTokenExpiresAt: toTimestamp(
+      apiTimeInMs,
+      response.data.refresh_token_expires_in
+    )
+  };
+  return { ...response, authentication };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/scope-token.js
+async function scopeToken(options) {
+  const {
+    request: optionsRequest,
+    clientType,
+    clientId,
+    clientSecret,
+    token,
+    ...requestOptions
+  } = options;
+  const request2 = optionsRequest || request;
+  const response = await request2(
+    "POST /applications/{client_id}/token/scoped",
+    {
+      headers: {
+        authorization: `basic ${btoa(`${clientId}:${clientSecret}`)}`
+      },
+      client_id: clientId,
+      access_token: token,
+      ...requestOptions
+    }
+  );
+  const authentication = Object.assign(
+    {
+      clientType,
+      clientId,
+      clientSecret,
+      token: response.data.token
+    },
+    response.data.expires_at ? { expiresAt: response.data.expires_at } : {}
+  );
+  return { ...response, authentication };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/reset-token.js
+async function resetToken(options) {
+  const request2 = options.request || request;
+  const auth = btoa(`${options.clientId}:${options.clientSecret}`);
+  const response = await request2(
+    "PATCH /applications/{client_id}/token",
+    {
+      headers: {
+        authorization: `basic ${auth}`
+      },
+      client_id: options.clientId,
+      access_token: options.token
+    }
+  );
+  const authentication = {
+    clientType: options.clientType,
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    token: response.data.token,
+    scopes: response.data.scopes
+  };
+  if (response.data.expires_at) {
+    authentication.expiresAt = response.data.expires_at;
+  }
+  if (authentication.clientType === "github-app") {
+    delete authentication.scopes;
+  }
+  return {
+    ...response,
+    authentication
+  };
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/delete-token.js
+async function deleteToken(options) {
+  const request2 = options.request || request;
+  const auth = btoa(`${options.clientId}:${options.clientSecret}`);
+  return request2(
+    "DELETE /applications/{client_id}/token",
+    {
+      headers: {
+        authorization: `basic ${auth}`
+      },
+      client_id: options.clientId,
+      access_token: options.token
+    }
+  );
+}
+
+// node_modules/@octokit-next/oauth-methods/lib/delete-authorization.js
+async function deleteAuthorization(options) {
+  const request2 = options.request || request;
+  const auth = btoa(`${options.clientId}:${options.clientSecret}`);
+  return request2(
+    "DELETE /applications/{client_id}/grant",
+    {
+      headers: {
+        authorization: `basic ${auth}`
+      },
+      client_id: options.clientId,
+      access_token: options.token
+    }
+  );
+}
 
 // node_modules/universal-github-app-jwt/lib/utils.js
 function string2ArrayBuffer(str) {
@@ -644,7 +924,7 @@ async function getToken({ privateKey, payload }) {
   }
   const algorithm = {
     name: "RSASSA-PKCS1-v1_5",
-    hash: { name: "SHA-256" },
+    hash: { name: "SHA-256" }
   };
   const header = { alg: "RS256", typ: "JWT" };
   const privateKeyDER = getDERfromPEM(privateKey);
@@ -670,26 +950,39 @@ async function getToken({ privateKey, payload }) {
 async function githubAppJwt({
   id,
   privateKey,
-  now = Math.floor(Date.now() / 1e3),
+  now = Math.floor(Date.now() / 1e3)
 }) {
   const nowWithSafetyMargin = now - 30;
   const expiration = nowWithSafetyMargin + 60 * 10;
   const payload = {
     iat: nowWithSafetyMargin,
     exp: expiration,
-    iss: id,
+    iss: id
   };
   const token = await getToken({
     privateKey,
-    payload,
+    payload
   });
   return {
     appId: id,
     expiration,
-    token,
+    token
   };
 }
-export { githubAppJwt, request };
+export {
+  checkToken,
+  createDeviceCode,
+  deleteAuthorization,
+  deleteToken,
+  exchangeDeviceCode,
+  exchangeWebFlowCode,
+  getWebFlowAuthorizationUrl,
+  githubAppJwt,
+  refreshToken,
+  request,
+  resetToken,
+  scopeToken
+};
 /*! Bundled license information:
 
 is-plain-object/dist/is-plain-object.mjs:
